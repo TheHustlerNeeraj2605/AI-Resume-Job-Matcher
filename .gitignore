@@ -1,0 +1,87 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter Notebook checkpoints & autosaves
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# OS generated files (Windows / macOS / Linux)
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Data directories (ignore local data dumps, keep directory structure via .gitkeep and docs)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/evaluation/*
+!data/evaluation/.gitkeep
+!data/README.md
+
+# Large model artifacts, weights, checkpoints, and embeddings
+models/*
+!models/.gitkeep
+*.pt
+*.pth
+*.bin
+*.onnx
+*.safetensors
+*.pkl
+*.joblib
+*.h5
+
+# Testing and coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
