@@ -85,3 +85,6 @@ htmlcov/
 *.log
 tmp/
 temp/
+
+# Streamlit local runtime / secrets
+.streamlit/secrets.toml
