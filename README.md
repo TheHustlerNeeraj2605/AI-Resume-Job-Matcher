@@ -113,13 +113,17 @@ Modern talent acquisition workflows face substantial operational and technical b
 
 ## 6. Dataset & Data Audit Findings
 
-The system was evaluated using an open paired resume–job description corpus. An initial audit in Phase 1 and Phase 2 uncovered critical structural properties that shaped the entire project:
+The system was evaluated using the open paired resume–job description corpus from Hugging Face: [`cnamuangtoun/resume-job-description-fit`](https://huggingface.co/datasets/cnamuangtoun/resume-job-description-fit).
+- **Source & Provenance**: Public community research dataset containing pairs of unstructured resume text, job posting descriptions, and 3-class fit labels (`No Fit`, `Potential Fit`, `Good Fit`).
+- **License Status**: The upstream repository card lists license metadata as unspecified / open community access. No commercial warranty is asserted.
+
+An initial audit in Phase 1 and Phase 2 uncovered critical structural properties that shaped the entire project:
 
 1. **Repeated Resumes & Job Postings**:
    - Multiple candidate profiles appeared repeatedly across diverse job postings.
    - Individual corporate job postings were paired with numerous candidates.
 2. **Duplicate & Conflicting Pairs**:
-   - Exact duplicate pairs and near-duplicate variations were identified and removed.
+   - Exact duplicate pairs and near-duplicate variations were identified and audited (specifically, 7 exact duplicate resume–job pairs were identified in the raw training data and verified for label consistency, but retained to preserve total dataset integrity).
    - Multi-label instances (resumes paired with multiple jobs yielding conflicting ground-truth labels) were audited to prevent training ambiguity.
 3. **Benchmark Disconnect (Official Test vs. Candidate Generalization)**:
    - **Official Test Set ($N=1,759$)**: Evaluates generalization to **unseen job descriptions**. Crucially, most resumes in this partition overlapped with profiles in the training set. It serves strictly as an **unseen-job benchmark**.
@@ -323,7 +327,7 @@ streamlit run app/streamlit_app.py
 | Evaluation Benchmark | Metric | TF-IDF Baseline | Model A (LR Reference) | Model F (Raw LightGBM) | Model F (Calibrated LightGBM) |
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | **Candidate Test** ($N=1,201$) | Macro F1 | 0.4393 | 0.4735 | 0.4712 | **0.4712** |
-| (Unseen Candidates) | Accuracy | 48.71% | 51.54% | 50.29% | **50.29%** |
+| (Unseen Candidates) | Accuracy | 52.37% | 51.54% | 50.29% | **50.29%** |
 | | Good Fit Recall | 27.57% | 45.51% | 43.19% | **43.19%** |
 | | ECE | - | - | 0.0333 | **0.0369** |
 | **Official Test** ($N=1,759$) | Macro F1 | 0.3691 | 0.4220 | 0.4360 | **0.4360** |
@@ -381,6 +385,18 @@ source .venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+
+### 4. Model Artifacts & Dataset Availability Notice
+In accordance with GitHub storage best practices and repository hygiene rules, large dataset files (`data/raw/`, `data/processed/`, `data/evaluation/`) and trained model binary weights (`models/*.joblib`, `models/*.pkl`) are excluded from Git tracking via `.gitignore`.
+- **Required Model Artifacts**: Production inference and tests require three serialized artifacts in `models/`:
+  1. `models/tfidf_vectorizer.joblib` (frozen training vocabulary vectorizer)
+  2. `models/model_f_ratio_focused_lgbm.pkl` (Model F LightGBM classifier)
+  3. `models/model_f_calibrator.joblib` (Temperature Scaling calibrator, $T = 1.4173$)
+- **Local Reproduction & Current Scope**: The production artifacts are generated through the project's modular pipelines:
+  - `models/tfidf_vectorizer.joblib`: Extracted and fitted on training vocabulary via `notebooks/01_dataset_audit.ipynb`.
+  - `models/model_f_ratio_focused_lgbm.pkl`: Trained and exported via `run_phase8b_pipeline.py`.
+  - `models/model_f_calibrator.joblib`: Fitted and exported via `run_phase10c_pipeline.py`.
+  Note that public cloud hosting / external release bucket downloads for pre-baked binary weights are **not** currently bundled with this repository; users running from a fresh clone must train/export artifacts locally using the documented reproduction scripts or place their existing trained artifacts into `models/`.
 
 ---
 
